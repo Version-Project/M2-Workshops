@@ -1,4 +1,4 @@
- 
+
 const express = require('express');
 const app = express();
 const InMemoryWorkshop = require('./inMemoryWorkshop');
@@ -51,8 +51,23 @@ app.get('/workshop/:name', function(req, res) {
       .catch((e) => ejs.send(e.message));
 });
 
+app.get('/remove-workshop', function(req, res) {
+  console.log('get-remove');
+  res.render('remove-workshop');
+});
+
 app.post('/remove-workshop', function(req, res) {
-  res.status(500).send('TODO');
+  const workshopName = req.body.name;
+
+  InMemoryWorkshop.removeWorkshopByName(workshopName)
+      .then(() => {
+        InMemoryWorkshop.getWorkshopList()
+            .then((workshops) => {
+              res.render('index', {
+                workshops: workshops,
+              });
+            });
+      }).catch((e) => res.send(e.message));
 });
 
 app.get('/update-workshop', function(req, res) {
